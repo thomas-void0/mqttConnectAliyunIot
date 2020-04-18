@@ -53,7 +53,7 @@ function throttle(fn,waitTime){
 
 /*数据请求部分*/
 const instance = axios.create({
-    baseURL:"http://api.map.baidu.com",//配置根路径
+    baseURL:"https://free-api.heweather.net/s6",//配置根路径
     timeout:5000,//设置超时时间为5s
 });
 
@@ -85,44 +85,20 @@ function requestData (url,data,methods='GET'){
  * 请求数据
  */
 function requestWeatherData (){
-    requestData('/telematics/v3/weather',{
-        location:'成都',
-        output:"json",
-        ak:"3p49MVra6urFRGOT9s8UBWr2"
+    requestData('weather/now',{
+        location:'chengdu',
+        key:"f09538c5d09b4150b6c89751457276e1",
     }).then(res=>{
-        const {data} = res;
-        if(data.status !== 'success'){
-            console.log(`数据请求失败，状态为:${data.status}`);
+        const {now} = res.data.HeWeather6[0];
+        if(res.statusText !== 'OK'){
+            console.log(`数据请求失败，状态为:${res.statusText}`);
         }else{
-            handleData(data);//如果获取成功，就把数据进行处理
+            let {tmp,hum} = now;
+            console.log(`温度数据为:${tmp},湿度数据为:${hum}`);
+            device.postProps({
+                tem:Number(tmp),
+                hum:Number(hum) //随机生成的(60~80之间的)湿度的值
+            });//将处理完成后的数据给予阿里云实例发送
         }        
     })
-}
-
-/**
- * 将得到数据进行处理返回
- * @param {object} data 
- */
-function handleData (data){
-    const {date} = data.results[0].weather_data[0];
-    const str = date.replace(/\s*/g,"");
-    const index = str.indexOf("℃");
-    let numStr = str.substring(index-3,index);
-    //判断是否存在-号,如果不是-号则重新进行取值
-    +numStr !== +numStr && (numStr = Number(str.substring(index-2,index))); 
-    let hum = humRandom(71,75);
-    console.log(`开始发送数据,当前温度:${numStr},随机的湿度值是:${hum}`);
-    device.postProps({
-        tem:numStr,
-        hum:hum //随机生成的(60~80之间的)湿度的值
-    });//将处理完成后的数据给予阿里云实例发送
-}
-
-/** max和min分别代表最大值和最小值
- * 生成在最大最小值范围内的随机的湿度值
- * @param {Number} max 
- * @param {Number} min 
- */
-function humRandom(min,max){
-    return +(Math.random()*(max-min+1)+min).toFixed(2);
 }
