@@ -3,10 +3,11 @@ const iot = require('alibabacloud-iot-device-sdk');
 
 /*阿里云连接部分*/
 // 设备信息
-const device = iot.device({
-    productKey:'a1OdnwoWT8M',
-    deviceName:'FO4bzjouQ8rwNFPN3sB4',
-    deviceSecret:'FDBM2DXJjH602GxTesxSXcaosYE3ytoZ',
+let device = null;
+device = iot.device({
+    productKey:'a1OdnwoWT8M', //产品key
+    deviceName:'FO4bzjouQ8rwNFPN3sB4', //设备名称
+    deviceSecret:'FDBM2DXJjH602GxTesxSXcaosYE3ytoZ',//密匙 
 
     //支付宝小程序和微信小程序额外需要配置协议参数
     // "protocol": 'alis://', "protocol": 'wxs://',
@@ -14,9 +15,39 @@ const device = iot.device({
 
 //监听阿里云iot连接
 device.on('connect',()=>{
-    //当aliyun连接上了以后，就开始请求数据。
-    requestWeatherData()
+    //每满一个小时请求一次数据
+    const throttleFn = throttle(requestWeatherData,10000);
+    //当aliyun连接上了以后，就开始请求数据。每隔1s钟轮询一次。
+    setInterval(() => {
+        throttleFn();
+    }, 1000);
 })
+
+//设备连接出错
+device.on('error', (err) => {
+    console.log(`设备连接出错:${err}`);
+});
+
+//监听阿里云iot连接断开,重新连接设备
+device.on('close',()=>{
+    device = iot.device({
+        productKey:'a1OdnwoWT8M', //产品key
+        deviceName:'FO4bzjouQ8rwNFPN3sB4', //设备名称
+        deviceSecret:'FDBM2DXJjH602GxTesxSXcaosYE3ytoZ',//密匙 
+    });
+})
+
+//函数节流
+function throttle(fn,waitTime){
+    let oldTime = 0;
+    return function(){
+        let nowTime = Date.now();
+        if(nowTime - oldTime >= waitTime){
+            oldTime = nowTime;
+            fn.apply(this,...arguments);
+        }
+    }
+}
 
 /*数据请求部分*/
 const instance = axios.create({
