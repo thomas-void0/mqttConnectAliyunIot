@@ -1,0 +1,27 @@
+{
+  "name": "getdata",
+  "version": "1.0.0",
+  "description": "\"\"\u001b[Dmqtt connect aliyun iot\"",
+  "main": "run.js",
+  "scripts": {
+    "test": "null"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/lmxyjy/mqttConnectAliyunIot.git"
+  },
+  "keywords": [
+    "\"\"\u001b[Dmqtt",
+    "\"\u001b[D&",
+    "aliyun\""
+  ],
+  "author": "thomas",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lmxyjy/mqttConnectAliyunIot/issues"
+  },
+  "homepage": "https://github.com/lmxyjy/mqttConnectAliyunIot#readme",
+  "dependencies": {
+    "alibabacloud-iot-device-sdk": "^1.2.8"
+  }
+}
