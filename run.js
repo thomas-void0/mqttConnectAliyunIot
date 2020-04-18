@@ -12,13 +12,13 @@ device = iot.device({
     //支付宝小程序和微信小程序额外需要配置协议参数
     // "protocol": 'alis://', "protocol": 'wxs://',
 });
-
+let timeId = null;
 //监听阿里云iot连接
 device.on('connect',()=>{
     //每满一个小时请求一次数据
     const throttleFn = throttle(requestWeatherData,3600000);
     //当aliyun连接上了以后，就开始请求数据。每隔1s钟轮询一次。
-    setInterval(() => {
+    timeId = setInterval(() => {
         throttleFn();
     }, 1000);
 })
@@ -31,6 +31,7 @@ device.on('error', (err) => {
 //监听阿里云iot连接断开,重新连接设备
 device.on('close',()=>{
     console.log(`连接断开，开始重新连接`);
+    clearInterval(timeId);
     device = iot.device({
         productKey:'a1OdnwoWT8M', //产品key
         deviceName:'FO4bzjouQ8rwNFPN3sB4', //设备名称
