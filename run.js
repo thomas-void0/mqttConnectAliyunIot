@@ -16,7 +16,7 @@ device = iot.device({
 //监听阿里云iot连接
 device.on('connect',()=>{
     //每满一个小时请求一次数据
-    const throttleFn = throttle(requestWeatherData,10000);
+    const throttleFn = throttle(requestWeatherData,3600000);
     //当aliyun连接上了以后，就开始请求数据。每隔1s钟轮询一次。
     setInterval(() => {
         throttleFn();
@@ -110,7 +110,7 @@ function handleData (data){
     let numStr = str.substring(index-3,index);
     //判断是否存在-号,如果不是-号则重新进行取值
     +numStr !== +numStr && (numStr = Number(str.substring(index-2,index))); 
-    let hum = humRandom();
+    let hum = humRandom(60,80);
     console.log(`开始发送数据,当前温度:${numStr},随机的湿度值是:${hum}`);
     device.postProps({
         tem:numStr,
