@@ -110,7 +110,7 @@ function handleData (data){
     let numStr = str.substring(index-3,index);
     //判断是否存在-号,如果不是-号则重新进行取值
     +numStr !== +numStr && (numStr = Number(str.substring(index-2,index))); 
-    let hum = humRandom(60,80);
+    let hum = humRandom(71,75);
     console.log(`开始发送数据,当前温度:${numStr},随机的湿度值是:${hum}`);
     device.postProps({
         tem:numStr,
@@ -124,5 +124,5 @@ function handleData (data){
  * @param {Number} min 
  */
 function humRandom(min,max){
-    return (Math.random()*(max-min+1)+min).toFixed(2);
+    return +(Math.random()*(max-min+1)+min).toFixed(2);
 }
