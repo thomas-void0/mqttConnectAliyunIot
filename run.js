@@ -30,6 +30,7 @@ device.on('error', (err) => {
 
 //监听阿里云iot连接断开,重新连接设备
 device.on('close',()=>{
+    console.log(`连接断开，开始重新连接`);
     device = iot.device({
         productKey:'a1OdnwoWT8M', //产品key
         deviceName:'FO4bzjouQ8rwNFPN3sB4', //设备名称
@@ -48,6 +49,7 @@ function throttle(fn,waitTime){
         }
     }
 }
+
 
 /*数据请求部分*/
 const instance = axios.create({
@@ -99,6 +101,7 @@ function requestWeatherData (){
 
 /**
  * 将得到数据进行处理返回
+ * @param {object} data 
  */
 function handleData (data){
     const {date} = data.results[0].weather_data[0];
@@ -107,7 +110,19 @@ function handleData (data){
     let numStr = str.substring(index-3,index);
     //判断是否存在-号,如果不是-号则重新进行取值
     +numStr !== +numStr && (numStr = Number(str.substring(index-2,index))); 
-    console.log(`开始发送数据,当前温度:${numStr}`);
-    device.postProps({tem:numStr});//将处理完成后的数据给予阿里云实例发送
+    let hum = humRandom();
+    console.log(`开始发送数据,当前温度:${numStr},随机的湿度值是:${hum}`);
+    device.postProps({
+        tem:numStr,
+        hum:hum //随机生成的(60~80之间的)湿度的值
+    });//将处理完成后的数据给予阿里云实例发送
 }
 
+/** max和min分别代表最大值和最小值
+ * 生成在最大最小值范围内的随机的湿度值
+ * @param {Number} max 
+ * @param {Number} min 
+ */
+function humRandom(min,max){
+    return (Math.random()*(max-min+1)+min).toFixed(2);
+}
