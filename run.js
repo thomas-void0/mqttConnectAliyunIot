@@ -98,7 +98,7 @@ function requestWeatherData (){
             console.log(`温度数据为:${tmp},湿度数据为:${hum}`);
             device.postProps({
                 tem:Number(tmp),
-                hum:Number(hum) //随机生成的(60~80之间的)湿度的值
+                hum:Number(hum) 
             });//将处理完成后的数据给予阿里云实例发送
         }        
     })
