@@ -23,6 +23,6 @@
   "homepage": "https://github.com/lmxyjy/mqttConnectAliyunIot#readme",
   "dependencies": {
     "alibabacloud-iot-device-sdk": "^1.2.8",
-    "axios": "^0.19.2"
+    "axios": "^0.21.1"
   }
 }
